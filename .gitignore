@@ -1,0 +1,5 @@
+tests/.phpunit.result.cache
+*.tar.gz
+*.key
+*.csr
+*.crt

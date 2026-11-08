@@ -1,0 +1,14 @@
+.scantopdf-backdrop { position: fixed; inset: 0; z-index: 10000; display: flex; align-items: center; justify-content: center; background: rgba(0, 0, 0, .5); }
+.scantopdf-dialog { box-sizing: border-box; width: 420px; max-width: calc(100vw - 32px); padding: 22px; color: var(--color-main-text); background: var(--color-main-background); border-radius: var(--border-radius-large); box-shadow: 0 4px 24px rgba(0, 0, 0, .35); }
+.scantopdf-dialog h2 { margin: 0 0 14px; font-size: 20px; font-weight: bold; }
+.scantopdf-choices { display: flex; gap: 12px; }
+.scantopdf-choices button { flex: 1; display: flex; flex-direction: column; gap: 4px; align-items: center; height: auto; padding: 18px 8px; margin: 0; white-space: normal; }
+.scantopdf-choices strong { font-size: 16px; }
+.scantopdf-choices small { color: var(--color-text-maxcontrast); }
+.scantopdf-status { margin: 4px 0 16px; overflow-wrap: anywhere; }
+.scantopdf-error { color: var(--color-error-text, red); }
+.scantopdf-buttons { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+.scantopdf-buttons button, .scantopdf-buttons a.button { margin: 0; }
+.scantopdf-resolution { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 14px; }
+.scantopdf-resolution span:first-child { margin-right: 4px; font-weight: bold; }
+.scantopdf-resolution button { min-width: 48px; margin: 0; }

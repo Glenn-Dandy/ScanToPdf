@@ -1,0 +1,41 @@
+#scantopdf-settings { max-width: 760px; }
+#scantopdf-settings .scantopdf-hint { color: var(--color-text-maxcontrast); margin-bottom: 14px; }
+#scantopdf-settings .scantopdf-status { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 10px; }
+#scantopdf-settings .scantopdf-dot { flex: none; width: 14px; height: 14px; margin-top: 3px; border-radius: 50%; }
+#scantopdf-settings .scantopdf-ok .scantopdf-dot { background: #2e9e4f; }
+#scantopdf-settings .scantopdf-missing .scantopdf-dot { background: #d92c2c; }
+#scantopdf-settings .scantopdf-status code { display: inline-block; margin-top: 4px; padding: 2px 8px; border-radius: var(--border-radius); background: var(--color-background-dark); user-select: all; }
+#scantopdf-settings .scantopdf-field { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 12px; align-items: center; margin-bottom: 12px; }
+#scantopdf-settings .scantopdf-field > span { font-weight: bold; }
+#scantopdf-settings select { width: 100%; margin: 0; }
+#scantopdf-settings .scantopdf-range { display: flex; align-items: center; gap: 10px; }
+#scantopdf-settings input[type=range] { flex: 1; }
+#scantopdf-settings .scantopdf-value { min-width: 36px; text-align: right; }
+#scantopdf-settings .scantopdf-field:first-of-type { margin-top: 16px; }
+#scantopdf-settings .scantopdf-actions { display: flex; gap: 8px; margin-top: 8px; }
+#scantopdf-settings button { margin: 0; }
+@media (max-width: 520px) { #scantopdf-settings .scantopdf-field { grid-template-columns: minmax(0, 1fr); gap: 4px; } }
+#scantopdf-settings .scantopdf-field[hidden] { display: none; }
+#scantopdf-settings input[type=checkbox] { justify-self: start; }
+#scantopdf-settings h3 { margin: 20px 0 6px; font-weight: bold; }
+#scantopdf-settings input[type=text] { width: 100%; margin: 0; box-sizing: border-box; }
+#scantopdf-settings .scantopdf-jobs { width: 100%; border-collapse: collapse; }
+#scantopdf-settings .scantopdf-jobs th, #scantopdf-settings .scantopdf-jobs td { padding: 5px 8px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--color-border); overflow-wrap: anywhere; }
+#scantopdf-settings .scantopdf-jobs th { font-weight: bold; }
+#scantopdf-settings .scantopdf-job-error td { color: var(--color-error-text, #c00); }
+#scantopdf-settings .scantopdf-reset { margin: -4px 0 16px 182px; }
+#scantopdf-settings .scantopdf-save { position: sticky; bottom: 0; z-index: 1; padding: 10px 0; margin: 8px 0 0; background: var(--color-main-background); border-top: 1px solid var(--color-border); }
+@media (max-width: 520px) { #scantopdf-settings .scantopdf-reset { margin-left: 0; } }
+#scantopdf-settings .scantopdf-row { display: flex; gap: 8px; align-items: center; }
+.scantopdf-backdrop { position: fixed; inset: 0; z-index: 10000; display: flex; align-items: center; justify-content: center; background: rgba(0, 0, 0, .5); }
+.scantopdf-dialog { box-sizing: border-box; width: 460px; max-width: calc(100vw - 32px); padding: 20px; color: var(--color-main-text); background: var(--color-main-background); border-radius: var(--border-radius-large); box-shadow: 0 4px 24px rgba(0, 0, 0, .35); }
+.scantopdf-dialog h2 { margin: 0 0 8px; font-size: 20px; font-weight: bold; }
+.scantopdf-location { margin-bottom: 10px; color: var(--color-text-maxcontrast); overflow-wrap: anywhere; }
+.scantopdf-folders { max-height: 50vh; min-height: 120px; overflow-y: auto; border: 1px solid var(--color-border); border-radius: var(--border-radius); }
+.scantopdf-folders .scantopdf-hint { padding: 10px; color: var(--color-text-maxcontrast); }
+.scantopdf-dialog .scantopdf-folders button.scantopdf-folder { display: block; width: 100%; margin: 0; padding: 8px 12px; text-align: left; background: none; border: 0; border-radius: 0; font-weight: normal; }
+.scantopdf-dialog .scantopdf-folders button.scantopdf-folder:hover { background: var(--color-background-hover); }
+.scantopdf-buttons { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-top: 14px; }
+.scantopdf-buttons button { margin: 0; }
+#scantopdf-settings .scantopdf-note { margin: -6px 0 12px 182px; }
+@media (max-width: 520px) { #scantopdf-settings .scantopdf-note { margin-left: 0; } }
