@@ -14,7 +14,13 @@ root=$(CDPATH= cd -- "$app/../.." && pwd)
 occ="$root/occ"
 [ -f "$occ" ] || { echo "Could not find occ at $occ"; exit 1; }
 php=$(command -v php) || { echo "php command line program not found"; exit 1; }
-user=$(stat -c %U "$occ")
+config="$root/config/config.php"
+[ -f "$config" ] || { echo "Could not find $config"; exit 1; }
+# occ only runs as the owner of config.php, and scanbd must not run as root
+user=$(stat -c %U "$config")
+case "$user" in
+    root|UNKNOWN) echo "$config has to belong to the web server user, not to $user"; exit 1 ;;
+esac
 pkill=$(command -v pkill) || { echo "pkill not found, please install procps"; exit 1; }
 command -v sudo >/dev/null || { echo "sudo not found, please install it"; exit 1; }
 

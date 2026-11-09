@@ -36,11 +36,17 @@ sudo sh /path/to/nextcloud/apps/scantopdf/scripts/setup-button.sh
 
 It installs and configures `scanbd`, adds a sudo rule limited to the three commands it needs, and in containers a small service that restarts `scanbd` when the scanner reappears. Then enable the button in the settings and choose who receives the scans and where they go.
 
-Tested on Debian with a Fujitsu ScanSnap S1500. Other systems may need manual setup.
+The script runs as root from the app folder, which the web server can usually write to. Read it before you run it.
+
+Made for Debian and Ubuntu, tested on Debian with a Fujitsu ScanSnap S1500. Other systems need manual setup.
+
+## Access
+
+Every logged-in user can start a scan, and whatever is in the feeder at that moment ends up in their files. Keep this in mind on servers with several users.
 
 ## Development
 
-The app has no build step: plain PHP and JavaScript. Without hardware, the SANE `test` backend works: enable `test` in `/etc/sane.d/dll.conf`.
+The app has no build step: plain PHP and JavaScript. Without hardware, the SANE `test` backend works: enable `test` in `/etc/sane.d/dll.conf`. The tests need neither Nextcloud nor a scanner: `php tests/options.php` and `php tests/cleaner.php`.
 
 ## License
 

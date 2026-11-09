@@ -28,7 +28,6 @@ use OCP\IUser;
 use OCP\IUserManager;
 
 class ScanController extends Controller {
-    private const ACTIVE_LIMIT = 3600;
     private const USER_LIST_LIMIT = 500;
     private const RESOLUTIONS = [75, 150, 300, 600];
 
@@ -149,8 +148,7 @@ class ScanController extends Controller {
             return new DataResponse(['message' => 'The target folder does not exist'], Http::STATUS_BAD_REQUEST);
         }
 
-        $now = $this->timeFactory->getTime();
-        if ($this->jobMapper->hasActiveJob($now - self::ACTIVE_LIMIT)) {
+        if ($this->jobMapper->hasActiveJob($this->timeFactory->getTime())) {
             return new DataResponse(['message' => 'The scanner is busy'], Http::STATUS_CONFLICT);
         }
 

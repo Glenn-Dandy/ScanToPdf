@@ -16,8 +16,6 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ButtonPressed extends Command {
-    private const ACTIVE_LIMIT = 3600;
-
     public function __construct(
         private SettingsService $settings,
         private JobMapper $jobMapper,
@@ -37,7 +35,7 @@ class ButtonPressed extends Command {
     protected function execute(InputInterface $input, OutputInterface $output): int {
         $settings = $this->settings->get();
         $now = $this->timeFactory->getTime();
-        if (!$settings['buttonEnabled'] || $settings['buttonUser'] === '' || $this->jobMapper->hasActiveJob($now - self::ACTIVE_LIMIT)) {
+        if (!$settings['buttonEnabled'] || $settings['buttonUser'] === '' || $this->jobMapper->hasActiveJob($now)) {
             return 0;
         }
 

@@ -20,7 +20,9 @@
 	function el(tag, props = {}, ...children) {
 		const node = document.createElement(tag)
 		Object.entries(props).forEach(([key, value]) => {
-			if (key.startsWith('on')) {
+			if (key === 'class') {
+				node.className = value
+			} else if (key.startsWith('on')) {
 				node.addEventListener(key.slice(2), value)
 			} else {
 				node[key] = value
@@ -47,19 +49,19 @@
 		}
 		const onKey = (event) => event.key === 'Escape' && close()
 
-		const dialog = el('div', { className: 'scantopdf-dialog', role: 'dialog' })
-		const backdrop = el('div', { className: 'scantopdf-backdrop', onclick: (event) => event.target === backdrop && close() }, dialog)
+		const dialog = el('div', { class:'scantopdf-dialog', role: 'dialog' })
+		const backdrop = el('div', { class:'scantopdf-backdrop', onclick: (event) => event.target === backdrop && close() }, dialog)
 		document.addEventListener('keydown', onKey)
 		document.body.append(backdrop)
 
-		const buttons = (...items) => el('div', { className: 'scantopdf-buttons' }, ...items)
+		const buttons = (...items) => el('div', { class:'scantopdf-buttons' }, ...items)
 		const closeButton = () => el('button', { type: 'button', textContent: tr('Close'), onclick: close })
 
 		const showError = (message) => {
 			running = false
 			dialog.replaceChildren(
 				el('h2', { textContent: tr('Scan to PDF') }),
-				el('p', { className: 'scantopdf-status scantopdf-error', textContent: message }),
+				el('p', { class:'scantopdf-status scantopdf-error', textContent: message }),
 				buttons(closeButton()),
 			)
 		}
@@ -69,10 +71,10 @@
 			finished = true
 			dialog.replaceChildren(
 				el('h2', { textContent: tr('Scan finished') }),
-				el('p', { className: 'scantopdf-status', textContent: tr('{pages} pages saved as {name}', { pages: job.pages, name: job.fileName }) }),
+				el('p', { class:'scantopdf-status', textContent: tr('{pages} pages saved as {name}', { pages: job.pages, name: job.fileName }) }),
 				buttons(
 					closeButton(),
-					el('a', { className: 'button primary', href: OC.generateUrl('/f/{id}', { id: job.fileId }), textContent: tr('Open PDF') }),
+					el('a', { class:'button primary', href: OC.generateUrl('/f/{id}', { id: job.fileId }), textContent: tr('Open PDF') }),
 				),
 			)
 		}
@@ -92,7 +94,7 @@
 
 		const start = (kind) => {
 			running = true
-			const status = el('p', { className: 'scantopdf-status', textContent: tr('Scanner is starting …') })
+			const status = el('p', { class:'scantopdf-status', textContent: tr('Scanner is starting …') })
 			dialog.replaceChildren(el('h2', { textContent: tr('Scan to PDF') }), status)
 			api('POST', '/scan', { folder: folder.path, kind, dpi }).then((job) => follow(job.id, status)).catch((error) => showError(error.message))
 		}
@@ -102,12 +104,12 @@
 
 		// Nothing chosen means the server uses the saved resolution
 		let dpi = 0
-		const resolution = el('div', { className: 'scantopdf-resolution' })
+		const resolution = el('div', { class:'scantopdf-resolution' })
 		const showResolutions = (values) => resolution.replaceChildren(
 			el('span', { textContent: tr('Resolution') }),
 			...values.map((value) => el('button', {
 				type: 'button',
-				className: value === dpi ? 'primary' : '',
+				class:value === dpi ? 'primary' : '',
 				textContent: String(value),
 				onclick: () => {
 					dpi = value
@@ -123,12 +125,12 @@
 
 		dialog.append(
 			el('h2', { textContent: tr('Scan to PDF') }),
-			el('div', { className: 'scantopdf-choices' },
+			el('div', { class:'scantopdf-choices' },
 				choice('text', tr('Text'), tr('Letters and documents')),
 				choice('photo', tr('Image'), tr('Photos and pictures, in color')),
 			),
 			resolution,
-			buttons(OC.isUserAdmin() ? el('a', { className: 'button', href: OC.generateUrl('/settings/admin/scantopdf'), textContent: tr('Settings') }) : null, closeButton()),
+			buttons(OC.isUserAdmin() ? el('a', { class:'button', href: OC.generateUrl('/settings/admin/scantopdf'), textContent: tr('Settings') }) : null, closeButton()),
 		)
 	}
 

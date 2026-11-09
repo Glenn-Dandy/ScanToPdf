@@ -10,6 +10,8 @@ use OCP\IDBConnection;
 
 /** @extends QBMapper<Job> */
 class JobMapper extends QBMapper {
+    private const ACTIVE_LIMIT = 3600;
+
     public function __construct(IDBConnection $db) {
         parent::__construct($db, 'scantopdf_jobs', Job::class);
     }
@@ -41,13 +43,13 @@ class JobMapper extends QBMapper {
         return $this->findEntities($qb);
     }
 
-    /** A scanner can only do one thing at a time. Jobs older than $since count as abandoned. */
-    public function hasActiveJob(int $since): bool {
+    /** A scanner can only do one thing at a time. Jobs older than an hour count as abandoned. */
+    public function hasActiveJob(int $now): bool {
         $qb = $this->db->getQueryBuilder();
         $qb->select('id')
             ->from($this->getTableName())
             ->where($qb->expr()->in('status', $qb->createNamedParameter([Job::STATUS_WAITING, Job::STATUS_SCANNING], IQueryBuilder::PARAM_STR_ARRAY)))
-            ->andWhere($qb->expr()->gt('created', $qb->createNamedParameter($since, IQueryBuilder::PARAM_INT)))
+            ->andWhere($qb->expr()->gt('created', $qb->createNamedParameter($now - self::ACTIVE_LIMIT, IQueryBuilder::PARAM_INT)))
             ->setMaxResults(1);
         $result = $qb->executeQuery();
         $found = $result->fetchOne();

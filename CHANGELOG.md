@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.1
+
+- The button setup uses the owner of `config.php` and refuses to run `scanbd` as root
+
 ## 0.3.0
 
 - Choose the resolution in the scan dialog
