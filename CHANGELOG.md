@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.3
+
+- Receipts are always scanned on one side
+
+## 0.3.2
+
+- Choose the page size in the scan dialog
+- Receipt mode: narrow pages of any length
+- Feed a single sheet or everything in the feeder
+
 ## 0.3.1
 
 - The button setup uses the owner of `config.php` and refuses to run `scanbd` as root

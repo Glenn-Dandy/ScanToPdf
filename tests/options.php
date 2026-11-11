@@ -4,7 +4,7 @@ require __DIR__ . '/../lib/Service/OptionBuilder.php';
 
 use OCA\ScanToPdf\Service\OptionBuilder as B;
 
-const SETTINGS = ['source' => '', 'side' => 'front', 'paper' => 'a4', 'textDpi' => 300, 'photoDpi' => 300, 'brightness' => 0, 'contrast' => 0, 'deskew' => false, 'skipBlank' => false];
+const SETTINGS = ['source' => '', 'side' => 'front', 'paper' => 'a4', 'textDpi' => 300, 'photoDpi' => 300, 'brightness' => 0, 'contrast' => 0, 'deskew' => false, 'skipBlank' => false, 'sheets' => 0];
 
 function value(array $args, string $name): ?string {
     $index = array_search($name, $args, true);
@@ -29,6 +29,7 @@ Options specific to device `fujitsu:ScanSnap S1500:11497':
     --swdeskew[=(yes|no)] [no]
     --swskip 0..100% (in steps of 0.100006) [0]
     --swcrop[=(yes|no)] [no]
+    --ald[=(yes|no)] [no] [advanced]
   Sensors:
     --scan[=(yes|no)] [no] [hardware]
 OUTPUT);
@@ -83,10 +84,28 @@ check('auto scans the maximum', value($auto, '--page-height'), '876.695');
 check('auto crops', in_array('--swcrop=yes', $auto, true), true);
 check('auto without crop support', value(B::build($flatbed, ['paper' => 'auto'] + SETTINGS, 'text'), '-y'), null);
 
+check('advanced switch', $sheetFed['ald'], ['switch' => true, 'sensor' => false]);
+check('normal paper does not detect the end', in_array('--ald=yes', B::build($sheetFed, SETTINGS, 'text'), true), false);
+
+$receipt = B::build($sheetFed, ['paper' => 'receipt'] + SETTINGS, 'text');
+check('receipt width', [value($receipt, '--page-width'), value($receipt, '-x')], ['80', '80']);
+check('receipt allows the longest page', [value($receipt, '--page-height'), value($receipt, '-y')], ['876.695', '876.695']);
+check('receipt detects the paper end', in_array('--ald=yes', $receipt, true), true);
+check('receipt ignores both sides', value(B::build($sheetFed, ['paper' => 'receipt', 'side' => 'both'] + SETTINGS, 'text'), '--source'), 'ADF Front');
+check('receipt ignores a saved duplex source', value(B::build($sheetFed, ['paper' => 'receipt', 'source' => 'ADF Duplex'] + SETTINGS, 'text'), '--source'), 'ADF Front');
+check('other papers stay duplex', value(B::build($sheetFed, ['paper' => 'a5', 'side' => 'both'] + SETTINGS, 'text'), '--source'), 'ADF Duplex');
+
+$receipt = B::build($flatbed, ['paper' => 'receipt'] + SETTINGS, 'text');
+check('receipt without page size', [value($receipt, '-x'), value($receipt, '-y')], ['80', '297']);
+check('receipt without detection', in_array('--ald=yes', $receipt, true), false);
+
 $args = B::build($flatbed, SETTINGS, 'text');
 check('flatbed without page size', [value($args, '-x'), value($args, '-y')], ['210', '297']);
 check('flatbed scans one page', in_array('--batch-count=1', $args, true), true);
 check('feeder scans until empty', in_array('--batch-count=1', B::build($sheetFed, SETTINGS, 'text'), true), false);
+check('one sheet from the feeder', in_array('--batch-count=1', B::build($sheetFed, ['sheets' => 1] + SETTINGS, 'text'), true), true);
+check('one sheet, both sides', in_array('--batch-count=2', B::build($sheetFed, ['sheets' => 1, 'side' => 'both'] + SETTINGS, 'text'), true), true);
+check('one sheet on a flatbed is one page', array_count_values(B::build($flatbed, ['sheets' => 1] + SETTINGS, 'text'))['--batch-count=1'], 1);
 check('feeder', B::isFlatbed('ADF Duplex'), false);
 check('flatbed', B::isFlatbed('Flatbed'), true);
 

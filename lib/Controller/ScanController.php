@@ -30,6 +30,8 @@ use OCP\IUserManager;
 class ScanController extends Controller {
     private const USER_LIST_LIMIT = 500;
     private const RESOLUTIONS = [75, 150, 300, 600];
+    private const PAPERS = ['auto', 'a4', 'a5', 'a6', 'letter', 'legal', 'receipt'];
+    private const DIALOG_PAPERS = ['a4', 'a5', 'receipt'];
 
     public function __construct(
         IRequest $request,
@@ -130,13 +132,19 @@ class ScanController extends Controller {
     #[NoAdminRequired]
     #[FrontpageRoute(verb: 'GET', url: '/defaults')]
     public function defaults(): DataResponse {
-        return new DataResponse(['dpi' => $this->settings->get()['textDpi'], 'resolutions' => self::RESOLUTIONS]);
+        $settings = $this->settings->get();
+        return new DataResponse([
+            'dpi' => $settings['textDpi'],
+            'resolutions' => self::RESOLUTIONS,
+            'paper' => $settings['paper'],
+            'papers' => array_values(array_unique([...self::DIALOG_PAPERS, $settings['paper']])),
+        ]);
     }
 
     #[NoAdminRequired]
     #[FrontpageRoute(verb: 'POST', url: '/scan')]
-    public function scan(string $folder = '', string $kind = 'text', int $dpi = 0): DataResponse {
-        if (!in_array($kind, ['text', 'photo'], true) || ($dpi !== 0 && !in_array($dpi, self::RESOLUTIONS, true))) {
+    public function scan(string $folder = '', string $kind = 'text', int $dpi = 0, string $paper = '', int $sheets = 0): DataResponse {
+        if (!in_array($kind, ['text', 'photo'], true) || ($dpi !== 0 && !in_array($dpi, self::RESOLUTIONS, true)) || ($paper !== '' && !in_array($paper, self::PAPERS, true)) || !in_array($sheets, [0, 1], true)) {
             return new DataResponse(['message' => 'Invalid setting'], Http::STATUS_BAD_REQUEST);
         }
         if (!$this->sane->isAvailable()) {
@@ -152,7 +160,7 @@ class ScanController extends Controller {
             return new DataResponse(['message' => 'The scanner is busy'], Http::STATUS_CONFLICT);
         }
 
-        $job = $this->runner->create($this->userId, $folder, $kind, $dpi === 0 ? null : $dpi);
+        $job = $this->runner->create($this->userId, $folder, $kind, $dpi === 0 ? null : $dpi, $paper === '' ? null : $paper, $sheets === 0 ? null : $sheets);
 
         // Scanning takes minutes, so it runs on its own instead of holding the request open
         $php = $this->binaryFinder->findBinaryPath('php');

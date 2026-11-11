@@ -1,6 +1,6 @@
 # Scan to PDF
 
-A Nextcloud app that adds **Scan to PDF** to the **New** menu in Files. Choose text or image and the resolution, and the finished PDF lands in the folder you are in.
+A Nextcloud app that adds **Scan to PDF** to the **New** menu in Files. Choose text or image, the resolution and the page size, and the finished PDF lands in the folder you are in.
 
 ![Scan dialog](screenshots/dialog.jpg)
 
@@ -12,6 +12,7 @@ A Nextcloud app that adds **Scan to PDF** to the **New** menu in Files. Choose t
 - Multi-page PDFs from document feeders, single or double sided
 - Text is stored losslessly with 8 shades of gray: sharp, small files and no noise around the letters
 - Images are stored as JPEG with adjustable quality
+- Receipt mode for narrow pages of any length
 - Global settings for resolution, page size, brightness and contrast
 - Removes the dark line many sheet-fed scanners leave at the end of the paper
 - Where the driver supports it: straighten pages and remove blank pages

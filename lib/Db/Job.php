@@ -20,6 +20,10 @@ use OCP\DB\Types;
  * @method void setFolder(string $folder)
  * @method int|null getDpi()
  * @method void setDpi(?int $dpi)
+ * @method string|null getPaper()
+ * @method void setPaper(?string $paper)
+ * @method int|null getSheets()
+ * @method void setSheets(?int $sheets)
  * @method int getPages()
  * @method void setPages(int $pages)
  * @method void setFileId(?int $fileId)
@@ -38,6 +42,8 @@ class Job extends Entity implements JsonSerializable {
     protected $kind = '';
     protected $folder;
     protected $dpi;
+    protected $paper;
+    protected $sheets;
     protected $pages = 0;
     protected $fileId;
     protected $fileName;
@@ -47,6 +53,7 @@ class Job extends Entity implements JsonSerializable {
         $this->addType('created', Types::BIGINT);
         $this->addType('pages', Types::INTEGER);
         $this->addType('dpi', Types::INTEGER);
+        $this->addType('sheets', Types::INTEGER);
         $this->addType('fileId', Types::BIGINT);
     }
 

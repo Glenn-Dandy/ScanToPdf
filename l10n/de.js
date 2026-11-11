@@ -87,6 +87,10 @@ OC.L10N.register(
     "Quality": "Qualität",
     "Applies to images. Higher values give better pages and larger files.": "Gilt für Bilder. Höhere Werte ergeben bessere Seiten und größere Dateien.",
     "Resolution": "Auflösung",
-    "dpi": "dpi"
+    "dpi": "dpi",
+    "Receipt": "Kassenzettel",
+    "Feeder": "Einzug",
+    "Single": "Einzeln",
+    "All": "Alle"
 },
     "nplurals=2; plural=(n != 1);");

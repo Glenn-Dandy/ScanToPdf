@@ -49,19 +49,19 @@
 		}
 		const onKey = (event) => event.key === 'Escape' && close()
 
-		const dialog = el('div', { class:'scantopdf-dialog', role: 'dialog' })
-		const backdrop = el('div', { class:'scantopdf-backdrop', onclick: (event) => event.target === backdrop && close() }, dialog)
+		const dialog = el('div', { class: 'scantopdf-dialog', role: 'dialog' })
+		const backdrop = el('div', { class: 'scantopdf-backdrop', onclick: (event) => event.target === backdrop && close() }, dialog)
 		document.addEventListener('keydown', onKey)
 		document.body.append(backdrop)
 
-		const buttons = (...items) => el('div', { class:'scantopdf-buttons' }, ...items)
+		const buttons = (...items) => el('div', { class: 'scantopdf-buttons' }, ...items)
 		const closeButton = () => el('button', { type: 'button', textContent: tr('Close'), onclick: close })
 
 		const showError = (message) => {
 			running = false
 			dialog.replaceChildren(
 				el('h2', { textContent: tr('Scan to PDF') }),
-				el('p', { class:'scantopdf-status scantopdf-error', textContent: message }),
+				el('p', { class: 'scantopdf-status scantopdf-error', textContent: message }),
 				buttons(closeButton()),
 			)
 		}
@@ -71,10 +71,10 @@
 			finished = true
 			dialog.replaceChildren(
 				el('h2', { textContent: tr('Scan finished') }),
-				el('p', { class:'scantopdf-status', textContent: tr('{pages} pages saved as {name}', { pages: job.pages, name: job.fileName }) }),
+				el('p', { class: 'scantopdf-status', textContent: tr('{pages} pages saved as {name}', { pages: job.pages, name: job.fileName }) }),
 				buttons(
 					closeButton(),
-					el('a', { class:'button primary', href: OC.generateUrl('/f/{id}', { id: job.fileId }), textContent: tr('Open PDF') }),
+					el('a', { class: 'button primary', href: OC.generateUrl('/f/{id}', { id: job.fileId }), textContent: tr('Open PDF') }),
 				),
 			)
 		}
@@ -94,43 +94,53 @@
 
 		const start = (kind) => {
 			running = true
-			const status = el('p', { class:'scantopdf-status', textContent: tr('Scanner is starting …') })
+			const status = el('p', { class: 'scantopdf-status', textContent: tr('Scanner is starting …') })
 			dialog.replaceChildren(el('h2', { textContent: tr('Scan to PDF') }), status)
-			api('POST', '/scan', { folder: folder.path, kind, dpi }).then((job) => follow(job.id, status)).catch((error) => showError(error.message))
+			api('POST', '/scan', { folder: folder.path, kind, dpi, paper, sheets }).then((job) => follow(job.id, status)).catch((error) => showError(error.message))
 		}
 
 		const choice = (kind, title, hint) => el('button', { type: 'button', onclick: () => start(kind) },
 			el('strong', { textContent: title }), el('small', { textContent: hint }))
 
-		// Nothing chosen means the server uses the saved resolution
+		// Nothing chosen means the server uses the saved values
 		let dpi = 0
-		const resolution = el('div', { class:'scantopdf-resolution' })
-		const showResolutions = (values) => resolution.replaceChildren(
-			el('span', { textContent: tr('Resolution') }),
+		let paper = ''
+		let sheets = 0
+		const resolution = el('div', { class: 'scantopdf-resolution' })
+		const pageSize = el('div', { class: 'scantopdf-resolution' })
+		const sheetCount = el('div', { class: 'scantopdf-resolution' })
+		const paperName = (value) => ({ a4: 'A4', a5: 'A5', a6: 'A6', letter: 'Letter', legal: 'Legal', auto: tr('Automatic'), receipt: tr('Receipt') })[value]
+		const fillRow = (row, label, unit, values, current, nameOf, pick) => row.replaceChildren(
+			el('span', { textContent: label }),
 			...values.map((value) => el('button', {
 				type: 'button',
-				class:value === dpi ? 'primary' : '',
-				textContent: String(value),
+				class: value === current ? 'primary' : '',
+				textContent: nameOf(value),
 				onclick: () => {
-					dpi = value
-					showResolutions(values)
+					pick(value)
+					fillRow(row, label, unit, values, value, nameOf, pick)
 				},
 			})),
-			el('span', { textContent: tr('dpi') }),
+			el('span', { textContent: unit }),
 		)
+		fillRow(sheetCount, tr('Feeder'), '', [1, 0], sheets, (value) => value === 1 ? tr('Single') : tr('All'), (value) => { sheets = value })
 		api('GET', '/defaults').then((defaults) => {
 			dpi = defaults.dpi
-			showResolutions(defaults.resolutions)
+			paper = defaults.paper
+			fillRow(resolution, tr('Resolution'), tr('dpi'), defaults.resolutions, dpi, String, (value) => { dpi = value })
+			fillRow(pageSize, tr('Page size'), '', defaults.papers, paper, paperName, (value) => { paper = value })
 		}).catch(() => {})
 
 		dialog.append(
 			el('h2', { textContent: tr('Scan to PDF') }),
-			el('div', { class:'scantopdf-choices' },
+			el('div', { class: 'scantopdf-choices' },
 				choice('text', tr('Text'), tr('Letters and documents')),
 				choice('photo', tr('Image'), tr('Photos and pictures, in color')),
 			),
 			resolution,
-			buttons(OC.isUserAdmin() ? el('a', { class:'button', href: OC.generateUrl('/settings/admin/scantopdf'), textContent: tr('Settings') }) : null, closeButton()),
+			pageSize,
+			sheetCount,
+			buttons(OC.isUserAdmin() ? el('a', { class: 'button', href: OC.generateUrl('/settings/admin/scantopdf'), textContent: tr('Settings') }) : null, closeButton()),
 		)
 	}
 

@@ -9,6 +9,8 @@ class OptionBuilder {
     // Share of dark pixels below which the driver treats a page as empty
     private const BLANK_PAGE_PERCENT = 1;
 
+    private const RECEIPT_WIDTH = 80;
+
     // Width and height in millimetres
     private const PAPER = [
         'a4' => [210, 297],
@@ -96,8 +98,32 @@ class OptionBuilder {
         return max($option['min'], min($option['max'], $value));
     }
 
+    // Receipts have a common maximum width but any length, so allow the longest page and let the scanner find the end
+    private static function receiptArgs(array $options): array {
+        $args = [];
+        if (isset($options['page-width']['max'], $options['page-height']['max'])) {
+            array_push($args, '--page-width', (string)self::fit($options['page-width'], self::RECEIPT_WIDTH), '--page-height', (string)$options['page-height']['max']);
+            array_push($args, '-x', (string)min(self::RECEIPT_WIDTH, $options['page-width']['max']), '-y', (string)$options['page-height']['max']);
+        } else {
+            if (isset($options['x']['max'])) {
+                array_push($args, '-x', (string)self::fit($options['x'], self::RECEIPT_WIDTH));
+            }
+            if (isset($options['y']['max'])) {
+                array_push($args, '-y', (string)$options['y']['max']);
+            }
+        }
+        if (isset($options['ald'])) {
+            $args[] = '--ald=yes';
+        }
+        return $args;
+    }
+
     /** @return string[] */
     private static function paperArgs(array $options, string $paper): array {
+        if ($paper === 'receipt') {
+            return self::receiptArgs($options);
+        }
+
         $hasPageSize = isset($options['page-width']['max'], $options['page-height']['max']);
 
         if (!isset(self::PAPER[$paper])) {
@@ -143,6 +169,14 @@ class OptionBuilder {
             array_push($args, '--resolution', (string)(int)$dpi);
         }
 
+        if ($settings['paper'] === 'receipt') {
+            // Only the front of a receipt matters
+            $settings['side'] = 'front';
+            if (self::find([$settings['source']], ['duplex']) !== null) {
+                $settings['source'] = '';
+            }
+        }
+
         $source = self::pickSource($options, $settings);
         if ($source !== null) {
             array_push($args, '--source', $source);
@@ -166,6 +200,9 @@ class OptionBuilder {
         // A flatbed never runs out of paper, so a batch would not stop by itself
         if ($source === null || self::isFlatbed($source)) {
             $args[] = '--batch-count=1';
+        } elseif ($settings['sheets'] === 1) {
+            // Duplex delivers the two sides of a sheet as two pages
+            $args[] = '--batch-count=' . (self::find([$source], ['duplex']) === null ? 1 : 2);
         }
 
         return $args;

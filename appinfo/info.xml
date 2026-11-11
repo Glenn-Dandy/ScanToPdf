@@ -7,7 +7,7 @@
     <description><![CDATA[Adds a Scan to PDF entry to the New menu in Files. Uses any scanner SANE can reach, connected locally or over the network, with an optional button on the scanner.
 
 Requires the sane-utils package on the server, for example: sudo apt install sane-utils]]></description>
-    <version>0.3.1</version>
+    <version>0.3.3</version>
     <licence>AGPL-3.0-or-later</licence>
     <author>Glenn-Dandy</author>
     <namespace>ScanToPdf</namespace>

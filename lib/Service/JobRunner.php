@@ -30,7 +30,7 @@ class JobRunner {
     ) {
     }
 
-    public function create(string $userId, string $folder, string $kind, ?int $dpi = null): Job {
+    public function create(string $userId, string $folder, string $kind, ?int $dpi = null, ?string $paper = null, ?int $sheets = null): Job {
         $job = new Job();
         $job->setUserId($userId);
         $job->setCreated($this->timeFactory->getTime());
@@ -38,6 +38,8 @@ class JobRunner {
         $job->setKind($kind);
         $job->setFolder($folder);
         $job->setDpi($dpi);
+        $job->setPaper($paper);
+        $job->setSheets($sheets);
         return $this->jobMapper->insert($job);
     }
 
@@ -76,11 +78,15 @@ class JobRunner {
         $this->jobMapper->update($job);
 
         $settings = $this->settings->get();
-        // A resolution picked for this one scan beats the saved one
+        // A resolution or page size picked for this one scan beats the saved one
         if ($job->getDpi() !== null) {
             $settings['textDpi'] = $job->getDpi();
             $settings['photoDpi'] = $job->getDpi();
         }
+        if ($job->getPaper() !== null) {
+            $settings['paper'] = $job->getPaper();
+        }
+        $settings['sheets'] = $job->getSheets() ?? 0;
         $device = $settings['device'] !== '' ? $settings['device'] : ($this->sane->cachedDevices()[0]['id'] ?? '');
         if ($device === '') {
             throw new RuntimeException('No scanner found');
