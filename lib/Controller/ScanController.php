@@ -206,6 +206,11 @@ class ScanController extends Controller {
         return new DataResponse($this->jobMapper->findLatest(10));
     }
 
+    #[FrontpageRoute(verb: 'DELETE', url: '/jobs')]
+    public function clearJobs(): DataResponse {
+        return new DataResponse(['deleted' => $this->jobMapper->deleteFinished($this->timeFactory->getTime())]);
+    }
+
     private function resolveFolder(string $userId, string $path): ?Folder {
         if (in_array('..', explode('/', $path), true)) {
             return null;

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.4
+
+- Clear the list of latest scans in the admin settings
+
 ## 0.3.3
 
 - Receipts are always scanned on one side

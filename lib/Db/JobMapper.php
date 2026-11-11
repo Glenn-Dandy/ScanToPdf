@@ -43,6 +43,17 @@ class JobMapper extends QBMapper {
         return $this->findEntities($qb);
     }
 
+    /** Removes every job except the ones still running, their dialog keeps polling them */
+    public function deleteFinished(int $now): int {
+        $qb = $this->db->getQueryBuilder();
+        $qb->delete($this->getTableName())
+            ->where($qb->expr()->orX(
+                $qb->expr()->notIn('status', $qb->createNamedParameter([Job::STATUS_WAITING, Job::STATUS_SCANNING], IQueryBuilder::PARAM_STR_ARRAY)),
+                $qb->expr()->lte('created', $qb->createNamedParameter($now - self::ACTIVE_LIMIT, IQueryBuilder::PARAM_INT)),
+            ));
+        return $qb->executeStatement();
+    }
+
     /** A scanner can only do one thing at a time. Jobs older than an hour count as abandoned. */
     public function hasActiveJob(int $now): bool {
         $qb = $this->db->getQueryBuilder();

@@ -63,6 +63,8 @@ OC.L10N.register(
     "Time for the second press": "Zeit für den zweiten Druck",
     "The scan only starts after this time. After the first press the scanner needs a moment before it notices the next one, so leave a short pause between presses.": "Der Scan startet erst nach dieser Zeit. Nach dem ersten Druck braucht der Scanner einen Moment, bis er den nächsten bemerkt, also zwischen den Drücken kurz warten.",
     "Latest scans": "Letzte Scans",
+    "Clear log": "Protokoll leeren",
+    "Log cleared": "Protokoll geleert",
     "No scans yet.": "Noch keine Scans.",
     "Done": "Fertig",
     "Error": "Fehler",

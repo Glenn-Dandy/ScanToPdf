@@ -259,6 +259,16 @@
 			),
 			el('h3', { textContent: tr('Latest scans') }),
 			jobList,
+			el('div', { class: 'scantopdf-actions' },
+				el('button', {
+					type: 'button',
+					textContent: tr('Clear log'),
+					onclick: () => api('DELETE', '/jobs').then(() => {
+						OCP.Toast.success(tr('Log cleared'))
+						return loadJobs()
+					}).catch((error) => OCP.Toast.error(error.message)),
+				}),
+			),
 		].filter(Boolean))
 		loadJobs()
 		await loadCapabilities()
